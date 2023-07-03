@@ -38,11 +38,16 @@ jobs:
 #      - name: Run tests
 #        run: pytest
 
-      - name: Build Docker image
-        run: docker build -t flask-app --build-arg VERSION=2.0.0 .
-
-      - name: Run Docker container
-        run: docker run -d -p 5000:5000 flask-app
+      - name: Build, Tag & Publish Image to DockerHub
+        uses: dinushchathurya/build-tag-push-action@v1.2.1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          context: .
+          file: Dockerfile
+          repoOwner: ${{ secrets.DOCKER_USERNAME }}
+          repository: flask-app
+          tag: latest
 
       - name: Terraform Setup
         run: |
