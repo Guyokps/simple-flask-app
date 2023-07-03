@@ -49,6 +49,11 @@ jobs:
           repository: flask-app
           tag: latest
 
+      - name: Retrieve AWS PEM file
+        run: |
+          echo "${{ secrets.TERRAFORM_PEM }}" > terraform.pem
+          chmod 600 terraform.pem
+
       - name: Terraform Setup
         run: |
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
