@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI-CD
 
 on:
   push:
@@ -13,6 +13,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
       - name: Checkout code
@@ -36,3 +40,20 @@ jobs:
 
       - name: Run Docker container
         run: docker run -d -p 5000:5000 flask-app
+
+      - name: Terraform Setup
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
+          sudo apt-get update && sudo apt-get install terraform    
+
+      - name: Authenticate with AWS
+        run: |
+          echo ${{ secrets.AWS_ACCESS_KEY_ID }} > ~/.aws/credentials
+          echo ${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials    
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
