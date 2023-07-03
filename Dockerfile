@@ -2,7 +2,7 @@
 FROM python:3.9-slim
 
 # Set the version as a build argument (default to 1.0.0 if not provided)
-ARG VERSION=1.0.0
+ARG VERSION
 
 # Set the working directory in the container
 WORKDIR /app

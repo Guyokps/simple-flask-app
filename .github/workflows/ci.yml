@@ -14,13 +14,16 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -36,7 +39,7 @@ jobs:
 #        run: pytest
 
       - name: Build Docker image
-        run: docker build -t flask-app --build-arg VERSION=$VERSION .
+        run: docker build -t flask-app --build-arg VERSION=2.0.0 .
 
       - name: Run Docker container
         run: docker run -d -p 5000:5000 flask-app
@@ -46,11 +49,6 @@ jobs:
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
           echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
           sudo apt-get update && sudo apt-get install terraform    
-
-      - name: Authenticate with AWS
-        run: |
-          echo ${{ secrets.AWS_ACCESS_KEY_ID }} > ~/.aws/credentials
-          echo ${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials    
 
       - name: Terraform Init
         run: terraform init
