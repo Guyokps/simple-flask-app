@@ -14,10 +14,11 @@ resource "aws_instance" "example" {
   ami           = "ami-053b0d53c279acc90"  # Replace with the desired AMI ID
   instance_type = "t2.micro"
   key_name      = "terraform"
-  #security_group_ids = ["<your_security_group_id>"]
+  #security_group_ids = ["sg-0cf32d8b7883edccf"]
   tags = {
     Name = "TF Instance"
   }
+
 
   provisioner "remote-exec" {
     inline = [
@@ -35,5 +36,18 @@ resource "aws_instance" "example" {
     host        = self.public_ip
     user        = "ubuntu"
     private_key = file("terraform.pem")
+  }
+}
+
+# Create a security group to allow SSH connections
+resource "aws_security_group" "ssh_security_group" {
+  name        = "ssh-security-group"
+  description = "Allow SSH connections"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow connections from any IP address
   }
 }
