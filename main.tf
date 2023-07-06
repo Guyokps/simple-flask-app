@@ -11,7 +11,7 @@ resource "aws_instance" "example" {
     Name = "TF Instance"
   }
 
-provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
       "sudo apt update",
       "sudo apt install docker.io -y",
@@ -20,7 +20,7 @@ provisioner "remote-exec" {
       "sudo docker pull guyok3/flask-app",
       "sudo docker run -p 80:5000 -d flask-app"
     ]
- }
+  }
 
   connection {
     type        = "ssh"
