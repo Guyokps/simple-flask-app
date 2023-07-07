@@ -9,21 +9,15 @@ variable "create_instance" {
   default = false  # Set this to false if you don't want to create the instance
 }
 
-data "aws_security_group" "existing_ssh_security_group" {
-  name = "ssh-security-group"
-}
-
 resource "aws_instance" "example" {
   count         = var.create_instance ? 1 : 0  # Create the instance only if var.create_instance is true
   ami           = "ami-053b0d53c279acc90"  # Replace with the desired AMI ID
   instance_type = "t2.micro"
   key_name      = "terraform"
+  #security_group_ids = ["sg-0cf32d8b7883edccf"]
   tags = {
     Name = "TF Instance"
   }
-
-  # Check if the security group already exists
-  security_group_ids = data.aws_security_group.existing_ssh_security_group.id != null ? [data.aws_security_group.existing_ssh_security_group.id] : []
 
   provisioner "remote-exec" {
     inline = [
@@ -44,16 +38,15 @@ resource "aws_instance" "example" {
   }
 }
 
-# Create a security group only if it doesn't already exist
-resource "aws_security_group" "ssh_security_group" {
-  count        = data.aws_security_group.existing_ssh_security_group.id == null ? 1 : 0
-  name         = "ssh-security-group"
-  description  = "Allow SSH connections"
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow connections from any IP address
-  }
-}
+# Create a security group to allow SSH connections
+#resource "aws_security_group" "ssh_security_group" {
+#  name        = "ssh-security-group"
+#  description = "Allow SSH connections"
+#
+#  ingress {
+#    from_port   = 22
+#    to_port     = 22
+#    protocol    = "tcp"
+#    cidr_blocks = ["0.0.0.0/0"]  # Allow connections from any IP address
+#  }
+#}
