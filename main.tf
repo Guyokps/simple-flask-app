@@ -15,6 +15,7 @@ resource "aws_instance" "example" {
   instance_type = "t2.micro"
   key_name      = "terraform"
   security_group_ids = [aws_security_group.ssh_security_group.id]
+  vpc_security_group_ids = [aws_security_group.ssh_security_group.id]
   tags = {
     Name = "TF Instance"
   }
