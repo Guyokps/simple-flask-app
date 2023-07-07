@@ -23,12 +23,7 @@ resource "aws_instance" "example" {
   }
 
   # Check if the security group already exists
-  dynamic "security_group_ids" {
-    for_each = data.aws_security_group.existing_ssh_security_group.id != null ? [data.aws_security_group.existing_ssh_security_group.id] : []
-    content {
-      value = security_group_ids.value
-    }
-  }
+  security_group_ids = data.aws_security_group.existing_ssh_security_group.id != null ? [data.aws_security_group.existing_ssh_security_group.id] : []
 
   provisioner "remote-exec" {
     inline = [
