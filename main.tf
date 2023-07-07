@@ -14,8 +14,7 @@ resource "aws_instance" "example" {
   ami           = "ami-053b0d53c279acc90"  # Replace with the desired AMI ID
   instance_type = "t2.micro"
   key_name      = "terraform"
-  security_group_ids = [aws_security_group.ssh_security_group.id]
-  vpc_security_group_ids = [aws_security_group.ssh_security_group.id]
+  #security_group_ids = ["sg-0cf32d8b7883edccf"]
   tags = {
     Name = "TF Instance"
   }
