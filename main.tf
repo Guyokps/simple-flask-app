@@ -6,17 +6,30 @@ provider "aws" {
 
 variable "create_instance" {
   type    = bool
-  default = false  # Set this to false if you don't want to create the instance
+  default = true  # Set this to false if you don't want to create the instance
+}
+
+resource "aws_security_group" "ssh" {
+  name        = "ssh-security-group"
+  description = "Allow SSH access"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_instance" "example" {
-  count         = var.create_instance ? 1 : 0  # Create the instance only if var.create_instance is true
-  ami           = "ami-053b0d53c279acc90"  # Replace with the desired AMI ID
+  count         = var.create_instance ? 1 : 0
+  ami           = "ami-053b0d53c279acc90"
   instance_type = "t2.micro"
   key_name      = "terraform"
-  #security_group_ids = ["sg-0cf32d8b7883edccf"]
+  security_group_ids = [aws_security_group.ssh.id]
+
   tags = {
-    Name = "TF Instance"
+    Name = "FlaskApp"
   }
 
   provisioner "remote-exec" {
@@ -37,16 +50,3 @@ resource "aws_instance" "example" {
     private_key = file("terraform.pem")
   }
 }
-
-# Create a security group to allow SSH connections
-#resource "aws_security_group" "ssh_security_group" {
-#  name        = "ssh-security-group"
-#  description = "Allow SSH connections"
-#
-#  ingress {
-#    from_port   = 22
-#    to_port     = 22
-#    protocol    = "tcp"
-#    cidr_blocks = ["0.0.0.0/0"]  # Allow connections from any IP address
-#  }
-#}
