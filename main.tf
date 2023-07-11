@@ -34,7 +34,7 @@ resource "aws_instance" "example" {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
-    private_key = file("C:/simple-python-flask/terraform.pem")
+    private_key = file("terraform.pem")
   }
 }
 
