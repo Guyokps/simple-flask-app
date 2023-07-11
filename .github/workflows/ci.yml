@@ -52,7 +52,7 @@ jobs:
       - name: Retrieve AWS PEM file
         run: |
           echo "${{ secrets.TERRAFORM_PEM }}" > terraform.pem
-          chmod 600 terraform.pem
+          chmod 400 terraform.pem
 
       - name: Terraform Setup
         run: |
